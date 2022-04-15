@@ -1,3 +1,4 @@
+SHELL := /bin/bash
 # Copyright (c) 2017, Lawrence Livermore National Security, LLC. Produced at
 # the Lawrence Livermore National Laboratory. LLNL-CODE-734707. All Rights
 # reserved. See files LICENSE and NOTICE for details.
@@ -248,13 +249,13 @@ tests:
 
 # Setup: download & install third party libraries: HYPRE, METIS & MFEM
 
-HYPRE_URL = https://computation.llnl.gov/projects/hypre-scalable-linear-solvers-multigrid-methods
+HYPRE_URL = https://github.com/hypre-space/hypre/archive/v2.11.2.tar.gz
 HYPRE_VER = 2.11.2
 HYPRE_DIR = hypre
 hypre:
 	@(if [[ ! -e ../$(HYPRE_DIR) ]]; then cd ..; \
-		wget -nc $(HYPRE_URL)/download/hypre-$(HYPRE_VER).tar.gz &&\
-		tar xzvf hypre-$(HYPRE_VER).tar.gz &&\
+		wget -nc $(HYPRE_URL) &&\
+		tar xzvf v$(HYPRE_VER).tar.gz &&\
 		ln -s hypre-$(HYPRE_VER) $(HYPRE_DIR) &&\
 		cd $(HYPRE_DIR)/src &&\
 		./configure --disable-fortran --without-fei CC=mpicc CXX=mpic++ &&\
@@ -272,7 +273,7 @@ metis:
 		make -j $(NPROC) OPTFLAGS="-O2";\
 		else echo "Using existing ../$(METIS_DIR)"; fi)
 
-MFEM_GIT = https://github.com/mfem/mfem.git
+MFEM_GIT = https://github.com/Lin-Mao/mfem.git
 MFEM_BUILD ?= parallel
 #MFEM_BUILD ?= pcuda -j CUDA_ARCH=sm_70
 mfem: hypre metis
