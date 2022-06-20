@@ -282,7 +282,10 @@ LagrangianHydroOperator::LagrangianHydroOperator(const int size,
 
 LagrangianHydroOperator::~LagrangianHydroOperator()
 {
+   qupdate->deleteVector();
+   leak_flag3 = true;
    delete qupdate;
+   leak_flag3 = false;
    if (p_assembly)
    {
       delete EMassPA;
@@ -602,7 +605,11 @@ double LagrangianHydroOperator::InternalEnergy(const ParGridFunction &gf) const
 
    // Get internal energy at the quadrature points
    L2r->Mult(gf, e_vector);
+   cudaFree(device_pointer6); // should free at second, but first also works
+   cudaFree(device_pointer7);
+   cudaFree(device_pointer8);
    l2_interpolator->Values(e_vector, eintQ);
+
 
    double internal_energy = ComputeVolumeIntegral(dim,NE,NQ,Q1D,1,1.0,
                                                   qdata.rho0DetJ0w,eintQ);
@@ -1116,7 +1123,8 @@ static void Rho0DetJ0Vol(const int dim, const int NE,
    Memory<double> &Jinv_m = qdata.Jac0inv.GetMemory();
    const MemoryClass mc = Device::GetMemoryClass();
    const int Ji_total_size = qdata.Jac0inv.TotalSize();
-   auto invJ = Reshape(Jinv_m.Write(mc, Ji_total_size), dim, dim, NQ, NE);
+   device_pointer3 = Jinv_m.Write(mc, Ji_total_size);
+   auto invJ = Reshape(device_pointer3, dim, dim, NQ, NE);
    Vector vol(NE*NQ), one(NE*NQ);
    auto A = Reshape(vol.Write(), NQ, NE);
    auto O = Reshape(one.Write(), NQ, NE);
@@ -1146,6 +1154,9 @@ static void Rho0DetJ0Vol(const int dim, const int NE,
             }
          }
       });
+      cudaFree(device_pointer2);
+      cudaFree(device_pointer3);
+      cudaFree(device_pointer5);
    }
    else
    {
@@ -1212,6 +1223,7 @@ void QKernel(const int NE, const int NQ,
    const auto d_Jac0inv = Read(Jac0inv.GetMemory(), Jac0inv.TotalSize());
    auto d_dt_est = dt_est.ReadWrite();
    auto d_stressJinvT = Write(stressJinvT.GetMemory(), stressJinvT.TotalSize());
+   device_pointer6 = d_stressJinvT;
    if (DIM == 2)
    {
       MFEM_FORALL_2D(e, NE, Q1D, Q1D, 1,

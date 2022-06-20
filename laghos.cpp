@@ -81,8 +81,33 @@ static long GetMaxRssMB();
 static void display_banner(std::ostream&);
 static void Checks(const int dim, const int ti, const double norm, int &checks);
 
+double *device_pointer1 = NULL;     // 131072 B (long bar) 4775847/1111
+double *device_pointer2 = NULL;     // 131072 B (long bar)  4775886/2017
+double *device_pointer3 = NULL;     // 131072 B (long bar)  4775898/2375
+double *device_pointer4 = NULL;     // 65536 B (long bar)   4775843/991
+double *device_pointer5 = NULL;     // 32768 B (long bar)   477888/2077
+double *device_pointer6 = NULL;     // 131072 B (short bar) 4775955/4113
+double *device_pointer7 = NULL;     // 131072 B (short bar) 4775944/3775
+double *device_pointer8 = NULL;     // 131072 B (short bar) 4775947/3869
+
+bool alloc_flag1 = false;  // for 1, 2
+bool alloc_flag2 = false;  // for 4
+bool alloc_flag3 = false;  // for 7, 8
+bool free_flag1 = false;   // for 1 free
+
+bool leak_flag1 = false;   // for 1, 2, 4, 5
+bool leak_flag2 = false;   // for 3, 6
+bool leak_flag3 = false;   // for 7, 8
+// int ctx_counter1 = 0;      // for 6 free
+
+// #define GDB
+
 int main(int argc, char *argv[])
 {
+#ifdef GDB
+   volatile int flags = 1;
+   while(flags);
+#endif
    // Initialize MPI.
    MPI_Session mpi(argc, argv);
    const int myid = mpi.WorldRank();

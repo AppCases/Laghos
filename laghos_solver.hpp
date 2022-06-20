@@ -69,6 +69,15 @@ private:
    const QuadratureInterpolator *q1,*q2;
    const ParGridFunction &gamma_gf;
 public:
+   void deleteVector() {
+      q_dt_est.deleteData();
+      q_e.deleteData();
+      e_vec.deleteData();
+      leak_flag3 = true;
+      q_dx.deleteData();
+      q_dv.deleteData();
+      leak_flag3 = false;
+   }
    QUpdate(const int d, const int ne, const int q1d,
            const bool visc, const bool vort,
            const double cfl, TimingData *t,
