@@ -278,7 +278,7 @@ MFEM_BUILD ?= parallel
 #MFEM_BUILD ?= pcuda -j CUDA_ARCH=sm_70
 mfem: hypre metis
 	@(if [[ ! -e ../mfem ]]; then cd ..; \
-		git clone --single-branch --branch master --depth 1 $(MFEM_GIT) &&\
+		git clone $(MFEM_GIT) &&\
 		cd mfem &&\
 		make $(MFEM_BUILD) -j $(NPROC); else echo "Using existing ../mfem"; fi)
 
