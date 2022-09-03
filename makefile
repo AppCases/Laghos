@@ -261,7 +261,7 @@ hypre:
 		./configure --disable-fortran --without-fei CC=mpicc CXX=mpic++ &&\
 		make -j $(NPROC);	else echo "Using existing ../$(HYPRE_DIR)"; fi)
 
-METIS_URL = http://glaros.dtc.umn.edu/gkhome/fetch/sw/metis
+METIS_URL = https://github.com/AppCases/metis-4.0.3/releases/download/4.0.3/metis-4.0.3.tar.gz
 METIS_VER = 4.0.3
 METIS_DIR = metis-4.0
 metis:
