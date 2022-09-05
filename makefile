@@ -266,7 +266,7 @@ METIS_VER = 4.0.3
 METIS_DIR = metis-4.0
 metis:
 	@(if [[ ! -e ../$(METIS_DIR) ]]; then cd ..; \
-		wget -nc $(METIS_URL)/OLD/metis-$(METIS_VER).tar.gz &&\
+		wget -nc $(METIS_URL) &&\
 		tar zxvf metis-$(METIS_VER).tar.gz &&\
 		ln -s metis-$(METIS_VER) $(METIS_DIR) &&\
 		cd $(METIS_DIR) &&\
